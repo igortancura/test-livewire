@@ -26,8 +26,25 @@
     fill: #337AB7;
 }
 
+ ul li {
+    border-left: 2px solid #ddd;
+}
+ul li:last-child {
+    border-color: transparent;
+}
+ul li::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: calc(var(--spacing) / -2);
+    left: -2px;
+    width: calc(var(--spacing) + 10px);
+    height: calc(var(--spacing) + 9px);
+    border: solid #ddd;
+    border-width: 0 0 2px 2px;
+}
 .action-button{
-  @apply px-1 cursor-pointer text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm text-center inline-flex items-center;
+    @apply px-1 cursor-pointer text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm text-center inline-flex items-center;
 }
 
 

@@ -11,12 +11,33 @@ use App\Exceptions\Tree\ActionException;
 
 class EditForm extends Form
 {
+    /**
+     * @var string
+     */
     public string $name = '';
+
+    /**
+     * @var int
+     */
     private int $type;
+
+    /**
+     * @var int
+     */
     private int $elementId;
 
+    /**
+     * @var Tree|null
+     */
     private Tree|null $element;
+    /**
+     * @var int|null
+     */
+    private int|null $parentDeletedElementId = null;
 
+    /**
+     * @return void
+     */
     public function boot(): void
     {
         $this->withValidator(function ($validator) {
@@ -32,6 +53,13 @@ class EditForm extends Form
         });
     }
 
+    /**
+     * @param int $type
+     * @param int $elementId
+     * @return void
+     * @throws ActionException
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function save(int $type, int $elementId): void
     {
         $this->type = $type;
@@ -60,13 +88,21 @@ class EditForm extends Form
         }
     }
 
+    /**
+     * @return string[]
+     */
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:3',
+            'name' => 'required|string|regex:/^[а-яА-ЯёЁa-zA-Z0-9\s]+$/|min:3|max:50',
         ];
     }
 
+    /**
+     * @param array $data
+     * @return void
+     * @throws ActionException
+     */
     private function add(array $data): void
     {
         DB::beginTransaction();
@@ -83,6 +119,11 @@ class EditForm extends Form
         DB::commit();
     }
 
+    /**
+     * @param array $data
+     * @return void
+     * @throws ActionException
+     */
     private function update(array $data): void
     {
         try {
@@ -92,12 +133,30 @@ class EditForm extends Form
         }
     }
 
+    /**
+     * @return void
+     * @throws ActionException
+     */
     private function delete(): void
     {
         try {
+            $this->parentDeletedElementId = $this->element->parent_id;
             $this->element->delete();
+            if (!empty($this->parentDeletedElementId)) {
+                if (Tree::where(['parent_id' => $this->parentDeletedElementId])->count() <= 0) {
+                    Tree::where(['id' => $this->parentDeletedElementId])->update(['is_parent' => false]);
+                }
+            }
         } catch (\Exception $exception) {
             throw new ActionException('error_delete');
         }
+    }
+
+    /**
+     * @return int
+     */
+    public function getParentDeletedElementId(): int
+    {
+        return empty($this->parentDeletedElementId) ? 0 : $this->parentDeletedElementId;
     }
 }

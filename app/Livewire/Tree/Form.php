@@ -11,17 +11,41 @@ use App\Exceptions\Tree\ActionException;
 
 class Form extends Component
 {
+    /**
+     *
+     */
     private const DELETE_TIMER = 100;
+
+    /**
+     * @var bool
+     */
     public bool $isOpen = false;
 
+    /**
+     * @var bool
+     */
     private bool $isStartTimer = false;
 
+    /**
+     * @var int
+     */
     public int $typeForm;
 
+    /**
+     * @var int
+     */
     public int $elementId;
 
+    /**
+     * @var EditForm
+     */
     public EditForm $form;
 
+    /**
+     * @param int $type
+     * @param int $elementId
+     * @return void
+     */
     #[On('element-open-form')]
     public function openForm(int $type, int $elementId): void
     {
@@ -34,12 +58,17 @@ class Form extends Component
                 $this->form->name = $element->name;
                 break;
             case FormType::DELETE->value:
+                $element = Tree::findOrFail($elementId);
+                $this->form->name = $element->name;
                 $this->isStartTimer = true;
                 $this->dispatch("start-timer");
                 break;
         }
     }
 
+    /**
+     * @return void
+     */
     public function closeForm(): void
     {
         $this->isOpen = false;
@@ -48,6 +77,12 @@ class Form extends Component
         $this->form->resetErrorBag();
     }
 
+    /**
+     * @param int $type
+     * @param int $elementId
+     * @return void
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function submit(int $type, int $elementId): void
     {
         try {
@@ -61,13 +96,16 @@ class Form extends Component
 
         $this->closeForm();
         if ($type == FormType::DELETE->value) {
-            $this->dispatch("refresh-element-0", $type);
+            $this->dispatch("refresh-element-".$this->form->getParentDeletedElementId(), $type);
         } else {
             $this->dispatch("refresh-element-{$elementId}", $type);
         }
 
     }
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|object
+     */
     public function render()
     {
         return view('livewire.tree.form', [

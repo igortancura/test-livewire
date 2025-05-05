@@ -6,7 +6,7 @@
 
 
                 <div class="bg-gray-50 px-4 py-3 sm:px-6">
-                    <label for="name-edit-form-tree" class="block">@lang('tree.forms.labels_name.'.$typeForm)</label>
+                    <label for="name-edit-form-tree" class="block">@lang('tree.forms.labels_name.'.$typeForm, ['name' => $form->name])</label>
                     <input type="text" wire:model="form.name" id="name-edit-form-tree" class=" border-1 border-sky-500 outline-sky-500 ">
                     <div class="text-red-600">@error('form.name') {{ $message }} @enderror</div>
                 </div>

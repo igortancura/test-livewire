@@ -13,7 +13,7 @@ return [
         'labels_name' => [
             \App\Enums\Tree\FormType::ADD->value => 'Enter a name to add an item',
             \App\Enums\Tree\FormType::EDIT->value => 'Change the name of the element',
-            \App\Enums\Tree\FormType::DELETE->value => 'To delete an element and its descendants, enter the name of the element to be deleted',
+            \App\Enums\Tree\FormType::DELETE->value => 'To delete an element and its descendants, enter the ":name" of the element to be deleted',
         ],
         'buttons' => [
             'cancel' => 'Cancel',
